@@ -1,0 +1,222 @@
+import React, { useState } from 'react';
+import type { GitHubCredentials, Note } from '../types';
+import { pullNotes, pushNotes } from '../github';
+import { Settings, RefreshCw, UploadCloud, DownloadCloud, Type, Palette, X, Info } from 'lucide-react';
+
+interface SettingsModalProps {
+  creds: GitHubCredentials | null;
+  onSaveCreds: (creds: GitHubCredentials) => void;
+  onClearCreds: () => void;
+  onClose: () => void;
+  localNotes: Note[];
+  onSyncComplete: (notes: Note[]) => void;
+  accentColor: string;
+  setAccentColor: (color: string) => void;
+}
+
+export const SettingsModal: React.FC<SettingsModalProps> = ({ 
+  creds, onSaveCreds, onClearCreds, onClose, localNotes, onSyncComplete, accentColor, setAccentColor
+}) => {
+  const [token, setToken] = useState(creds?.token || '');
+  const [owner, setOwner] = useState(creds?.owner || '');
+  const [repo, setRepo] = useState(creds?.repo || '');
+  
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState('');
+  const [activeTab, setActiveTab] = useState('general');
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSaveCreds({ token, owner, repo });
+    setSyncMessage('Credentials saved.');
+  };
+
+  const handlePull = async () => {
+    if (!creds) return;
+    setIsSyncing(true);
+    setSyncMessage('Pulling from GitHub...');
+    try {
+      const notes = await pullNotes(creds);
+      onSyncComplete(notes);
+      setSyncMessage(`Successfully pulled ${notes.length} notes.`);
+    } catch (err: any) {
+      setSyncMessage(`Error pulling: ${err.message}`);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handlePush = async () => {
+    if (!creds) return;
+    setIsSyncing(true);
+    setSyncMessage('Pushing to GitHub...');
+    try {
+      await pushNotes(creds, localNotes);
+      setSyncMessage(`Successfully pushed ${localNotes.length} notes.`);
+    } catch (err: any) {
+      setSyncMessage(`Error pushing: ${err.message}`);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}><Settings /> Impostazioni</h2>
+          <button className="btn-icon" onClick={onClose}><X size={20}/></button>
+        </div>
+
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-soft)', marginBottom: '1.5rem' }}>
+          <button 
+            className={`tab-button ${activeTab === 'general' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('general')}
+          >
+            Generale
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'sync' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('sync')}
+          >
+            Sincronizzazione GitHub
+          </button>
+        </div>
+
+        {activeTab === 'general' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ padding: '1.5rem', background: 'var(--bg-base)', borderRadius: '12px', border: '1px solid var(--border-soft)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-main)', fontWeight: '600' }}>
+                  <Type size={18} style={{ color: 'var(--accent-primary)' }}/> Panoramica App
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                  <p><strong>NoteTag v1.0</strong></p>
+                  <p>Un quaderno appunti markdown, ispirato a Memos, che conserva tutti i tuoi dati nel tuo browser o nel tuo cloud personale su GitHub, con completa tracciabilità.</p>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ padding: '1.5rem', background: 'var(--bg-base)', borderRadius: '12px', border: '1px solid var(--border-soft)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-main)', fontWeight: '600' }}>
+                  <Palette size={18} style={{ color: 'var(--accent-primary)' }}/> Tema e Colore (Accent)
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                  <p>Scegli il tuo colore preferito per l'interfaccia:</p>
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                  {['#3b82f6', '#10b981', '#8b5cf6', '#f43f5e', '#f97316', '#64748b', '#14b8a6', '#eab308'].map(color => (
+                    <div 
+                      key={color} 
+                      onClick={() => setAccentColor(color)}
+                      style={{ 
+                        width: '32px', height: '32px', borderRadius: '50%', background: color, cursor: 'pointer', 
+                        border: accentColor === color ? '3px solid var(--text-main)' : '3px solid transparent',
+                        boxShadow: 'var(--shadow-sm)'
+                      }} 
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {activeTab === 'sync' && (
+          <>
+            <details style={{ padding: '0.75rem 1rem', background: 'var(--bg-base)', border: '1px solid var(--border-soft)', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: '1.5' }}>
+              <summary style={{ color: 'var(--text-main)', fontWeight: '600', cursor: 'pointer', outline: 'none' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', verticalAlign: 'middle' }}>
+                  <Info size={16} style={{ color: 'var(--accent-primary)' }}/> Come configurare la sincronizzazione
+                </span>
+              </summary>
+              <ul style={{ margin: 0, marginTop: '0.75rem', paddingLeft: '1.5rem', color: 'var(--text-muted)' }}>
+                <li style={{ marginBottom: '0.25rem' }}>Crea un repository privato sul tuo account GitHub (es. <code>my-notes</code>).</li>
+                <li style={{ marginBottom: '0.25rem' }}><strong>Owner:</strong> il tuo nome utente GitHub. <strong>Repository:</strong> il nome del repo.</li>
+                <li><strong>PAT (Token):</strong> Vai su GitHub in <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 'bold' }}>Developer Settings &gt; Personal access tokens</a>. Genera un nuovo token "Classic" spuntando la casella <strong>repo</strong> (oppure un Fine-grained token con accesso in lettura/scrittura a <em>Contents</em>). Copia il codice <code>ghp_...</code> e incollalo qui.</li>
+              </ul>
+            </details>
+
+            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Personal Access Token (PAT)</label>
+                <input 
+                  type="password" 
+                  required 
+                  value={token} 
+                  onChange={e => setToken(e.target.value)} 
+                  placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Owner (Username)</label>
+                  <input required value={owner} onChange={e => setOwner(e.target.value)} placeholder="octocat" style={{ width: '100%' }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Repository</label>
+                  <input required value={repo} onChange={e => setRepo(e.target.value)} placeholder="my-notes" style={{ width: '100%' }} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Save Config</button>
+                <button type="button" className="btn" onClick={onClearCreds} style={{ color: 'var(--danger)', borderColor: 'var(--border-strong)' }}>Clear</button>
+              </div>
+            </form>
+
+            {creds ? (
+              <div style={{ borderTop: '1px solid var(--border-soft)', paddingTop: '1.5rem' }}>
+                <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-muted)' }}>Manual Synchronization</h3>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <button className="btn" onClick={handlePull} disabled={isSyncing} style={{ flex: 1, justifyContent: 'center' }}>
+                    <DownloadCloud size={18} /> Pull (Overwrite Local)
+                  </button>
+                  <button className="btn" onClick={handlePush} disabled={isSyncing} style={{ flex: 1, justifyContent: 'center' }}>
+                    <UploadCloud size={18} /> Push (Overwrite Remote)
+                  </button>
+                </div>
+                {syncMessage && (
+                  <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {isSyncing && <RefreshCw size={14} className="spin-animation" />}
+                    {syncMessage}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                Save your credentials to enable GitHub sync actions.
+              </div>
+            )}
+          </>
+        )}
+        
+        <style dangerouslySetInnerHTML={{__html: `
+          .spin-animation { animation: spin 1s linear infinite; }
+          @keyframes spin { 100% { transform: rotate(360deg); } }
+          .tab-button {
+            background: none;
+            border: none;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+          }
+          .tab-button:hover {
+            color: var(--text-main);
+          }
+          .tab-button.active {
+            color: var(--accent-primary);
+            border-bottom: 2px solid var(--accent-primary);
+            font-weight: 600;
+          }
+        `}} />
+      </div>
+    </div>
+  );
+};

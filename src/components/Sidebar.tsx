@@ -1,0 +1,104 @@
+import React, { useState, useMemo } from 'react';
+import type { Note } from '../types';
+import { Search, Settings, Tag as TagIcon, Hash, RefreshCw, CheckCircle, AlertTriangle, Cloud } from 'lucide-react';
+import dayjs from 'dayjs';
+import { Calendar } from './Calendar';
+
+interface SidebarProps {
+  notes: Note[];
+  onOpenSettings: () => void;
+  filterDate: dayjs.Dayjs | null;
+  setFilterDate: (val: dayjs.Dayjs | null) => void;
+  searchQuery: string;
+  setSearchQuery: (val: string) => void;
+  syncStatus?: 'idle' | 'syncing' | 'success' | 'error';
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ 
+  notes, onOpenSettings: onSettingsClick, filterDate, setFilterDate, searchQuery, setSearchQuery, syncStatus = 'idle'
+}) => {
+  const [currentCalDate, setCurrentCalDate] = useState(dayjs());
+  
+  // Collect active dates for the calendar
+  const activeDates = useMemo(() => {
+    return notes.map(n => dayjs(n.frontmatter['updated-at']).format('YYYY-MM-DD'));
+  }, [notes]);
+
+  // Aggregate tags
+  const tagsCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    notes.forEach(n => {
+      n.frontmatter.tags?.forEach(t => {
+        counts[t] = (counts[t] || 0) + 1;
+      });
+    });
+    return Object.entries(counts).sort((a,b) => b[1] - a[1]);
+  }, [notes]);
+
+  return (
+    <div className="glass-panel" style={{ width: '280px', display: 'flex', flexDirection: 'column', zIndex: 10 }}>
+      {/* Header */}
+      <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <h1 style={{ flex: 1, fontSize: '1.5rem', margin: 0, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>MEMOS</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {syncStatus === 'syncing' && <span title="Sincronizzazione in corso..."><RefreshCw size={16} className="spin-animation" style={{ color: 'var(--text-muted)' }} /></span>}
+          {syncStatus === 'success' && <span title="Salvato su GitHub"><CheckCircle size={16} style={{ color: 'var(--accent-primary)' }} /></span>}
+          {syncStatus === 'error' && <span title="Errore di sincronizzazione"><AlertTriangle size={16} style={{ color: 'var(--danger)' }} /></span>}
+          {syncStatus === 'idle' && <span title="Salvato localmente"><Cloud size={16} style={{ color: 'var(--text-muted)', opacity: 0.4 }} /></span>}
+          
+          <button className="btn-icon" onClick={onSettingsClick} title="Impostazioni"><Settings size={18} /></button>
+        </div>
+      </div>
+      
+      {/* Search */}
+      <div style={{ padding: '0.5rem 1.5rem 1rem 1.5rem' }}>
+        <div style={{ position: 'relative' }}>
+          <Search size={16} style={{ position: 'absolute', top: '12px', left: '12px', color: 'var(--text-muted)' }} />
+          <input 
+            type="text" 
+            placeholder="Search notes..." 
+            value={searchQuery} 
+            onChange={e => setSearchQuery(e.target.value)}
+            style={{ width: '100%', paddingLeft: '2.5rem', borderRadius: '8px', border: '1px solid var(--border-soft)' }}
+          />
+        </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {/* Calendar */}
+        <div style={{ padding: '0.5rem 1.5rem' }}>
+          <div style={{ background: 'var(--bg-panel)', borderRadius: '12px', padding: '0.5rem', border: '1px solid var(--border-soft)' }}>
+            <Calendar 
+              currentDate={currentCalDate} 
+              onDateChange={(d) => {
+                setCurrentCalDate(d);
+                if (filterDate && filterDate.isSame(d, 'day')) {
+                  setFilterDate(null); // toggle off
+                } else {
+                  setFilterDate(d);
+                }
+              }} 
+              activeDates={activeDates}
+            />
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <TagIcon size={14}/> Tags
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {tagsCount.map(([tag, count]) => (
+              <div key={tag} style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-main)', fontSize: '0.9rem', cursor: 'pointer', padding: '0.25rem 0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Hash size={14} color="var(--text-muted)"/> {tag}</span>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{count}</span>
+              </div>
+            ))}
+            {tagsCount.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No tags yet.</span>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
