@@ -42,12 +42,35 @@ function App() {
     }
   };
 
-  const handleDeleteNote = async (id: string) => {
-    deleteNote(id);
+  const handleDeleteNote = async (noteId: string) => {
+    const notesToDelete: Note[] = [];
+
+    // Recursive function to find all descendants
+    const findDescendants = (currentNoteId: string) => {
+      const children = notes.filter(n => n.frontmatter.parentId === currentNoteId);
+      children.forEach(child => {
+        notesToDelete.push(child);
+        findDescendants(child.id); // Recurse for children's children
+      });
+    };
+
+    // Add the initial note to delete
+    const mainNote = notes.find(n => n.id === noteId);
+    if (mainNote) {
+      notesToDelete.push(mainNote);
+      findDescendants(noteId);
+    }
+
+    // Perform local deletion first
+    notesToDelete.forEach(note => deleteNote(note.id));
+
+    // Perform GitHub deletion if credentials exist
     if (creds) {
       setSyncStatus('syncing');
       try {
-        await deleteSingleNote(creds, id);
+        for (const note of notesToDelete) {
+          await deleteSingleNote(creds, note.id);
+        }
         setSyncStatus('success');
         setTimeout(() => setSyncStatus('idle'), 3000);
       } catch (err) {
