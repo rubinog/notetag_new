@@ -136,13 +136,13 @@ export const NoteCard: React.FC<{
       className="note-card-container" 
       style={{ 
         background: isComment ? 'rgba(0,0,0,0.015)' : 'var(--bg-panel)', 
-        padding: isComment ? '0.75rem 1rem' : '1.25rem', 
+        padding: isComment ? '0.5rem 0.75rem' : '1.25rem', 
         borderRadius: isComment ? '8px' : '12px', 
         border: '1px solid var(--border-soft)', 
-        borderLeft: isComment ? '4px solid var(--border-soft)' : '1px solid var(--border-soft)',
+        borderLeft: isComment ? '3px solid var(--border-soft)' : '1px solid var(--border-soft)',
         boxShadow: isComment ? 'none' : 'var(--shadow-sm)', 
         position: 'relative',
-        marginBottom: isComment ? '0.25rem' : '0'
+        marginBottom: isComment ? '0.15rem' : '0'
       }}
     >
       
@@ -248,7 +248,7 @@ export const NoteCard: React.FC<{
         </div>
       ) : (
         <>
-          <div className="markdown-body" onClick={handleContentClick} dangerouslySetInnerHTML={{ __html: md.render(note.content) }} />
+          <div className="markdown-body" style={{ fontSize: isComment ? '0.9rem' : '1rem' }} onClick={handleContentClick} dangerouslySetInnerHTML={{ __html: md.render(note.content) }} />
 
           {/* Reply Box (Now above comments for better visibility) */}
           {isReplying && (
