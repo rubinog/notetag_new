@@ -242,6 +242,19 @@ input[type="checkbox"], input[type="radio"] {
   color: var(--accent-primary);
 }
 
+/* Highlight animation for linked notes */
+.note-card-container:target {
+  animation: highlight-pulse 2s ease-out;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 15px var(--accent-glow) !important;
+}
+
+@keyframes highlight-pulse {
+  0% { transform: scale(1); }
+  5% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
 /* --- Mobile Responsive Layout --- */
 .app-container {
   display: flex;

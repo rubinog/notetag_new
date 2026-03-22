@@ -46,7 +46,7 @@ export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCre
     : { background: 'var(--bg-panel)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-sm)', marginBottom: '1.5rem', position: 'relative' };
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg-base)', padding: '2rem' }}>
+    <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg-base)', padding: '2rem', scrollBehavior: 'smooth' }}>
       
       {isFocusMode && <div className="modal-backdrop" onClick={() => setIsFocusMode(false)} />}
       

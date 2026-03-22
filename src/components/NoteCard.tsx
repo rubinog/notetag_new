@@ -127,7 +127,7 @@ export const NoteCard: React.FC<{
   };
 
   return (
-    <div style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-sm)', position: 'relative' }}>
+    <div id={note.id} className="note-card-container" style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-sm)', position: 'relative' }}>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
