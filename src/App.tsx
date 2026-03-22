@@ -4,6 +4,7 @@ import { Feed } from './components/Feed';
 import { SettingsModal } from './components/SettingsModal';
 import { useNotes, useGitHubCredentials } from './store';
 import { pushSingleNote, deleteSingleNote } from './github';
+import { Menu } from 'lucide-react';
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import type { Note } from './types';
@@ -13,6 +14,7 @@ function App() {
   const { creds, saveCreds, clearCreds } = useGitHubCredentials();
   
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [filterDate, setFilterDate] = useState<dayjs.Dayjs | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [accentColor, setAccentColor] = useState(() => localStorage.getItem('notetag-accent') || '#3b82f6');
@@ -101,25 +103,42 @@ function App() {
     .sort((a,b) => dayjs(b.frontmatter['updated-at']).valueOf() - dayjs(a.frontmatter['updated-at']).valueOf());
 
   return (
-    <>
-      <Sidebar 
-        notes={notes} 
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        filterDate={filterDate}
-        setFilterDate={setFilterDate}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        syncStatus={syncStatus}
-      />
+    <div className="app-container">
+      {/* Mobile Top Header */}
+      <div className="mobile-header">
+        <button className="btn-icon" onClick={() => setIsMobileMenuOpen(true)}>
+          <Menu size={24} style={{ color: 'var(--text-main)' }} />
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <img src="/logo.png" width={24} height={24} alt="NoteTag" style={{ borderRadius: '6px' }} onError={(e) => e.currentTarget.style.display = 'none'} />
+          <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>NOTETAG</h1>
+        </div>
+      </div>
+
+      <div className={`sidebar-container ${isMobileMenuOpen ? 'open' : ''}`}>
+        <Sidebar 
+          notes={notes} 
+          onOpenSettings={() => { setIsSettingsOpen(true); setIsMobileMenuOpen(false); }}
+          filterDate={filterDate}
+          setFilterDate={setFilterDate}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          syncStatus={syncStatus}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
+        />
+        {isMobileMenuOpen && <div className="sidebar-backdrop" onClick={() => setIsMobileMenuOpen(false)} />}
+      </div>
       
-      <Feed 
-        notes={filteredNotes}
-        allNotes={notes}
-        onCreateNote={(c) => handleCreateNew(c)}
-        onCreateComment={(parentId, c) => handleCreateNew(c, parentId)}
-        onUpdateNote={handleSaveNote}
-        onDeleteNote={handleDeleteNote}
-      />
+      <div className="feed-container">
+        <Feed 
+          notes={filteredNotes}
+          allNotes={notes}
+          onCreateNote={(c) => handleCreateNew(c)}
+          onCreateComment={(parentId, c) => handleCreateNew(c, parentId)}
+          onUpdateNote={handleSaveNote}
+          onDeleteNote={handleDeleteNote}
+        />
+      </div>
 
       {isSettingsOpen && (
         <SettingsModal 
@@ -133,7 +152,7 @@ function App() {
           setAccentColor={setAccentColor}
         />
       )}
-    </>
+    </div>
   );
 }
 

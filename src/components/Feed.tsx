@@ -95,13 +95,13 @@ export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCre
             onChange={(e) => setNewContent(e.target.value)}
             style={{ flex: isFocusMode ? 1 : 'none', width: '100%', minHeight: isFocusMode ? 'auto' : '100px', border: 'none', resize: 'vertical', background: 'transparent', boxShadow: 'none', fontSize: isFocusMode ? '1.1rem' : '1rem' }}
           />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', borderTop: '1px solid var(--border-soft)', paddingTop: '0.75rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', borderTop: '1px solid var(--border-soft)', paddingTop: '0.75rem' }}>
             <Toolbar 
               onInsert={handleInsert} 
               onTagClick={() => handleInsert('#')} 
               onLinkClick={() => setShowLinkModal(true)}
             />
-            <button className="btn btn-primary" onClick={handleCreate} style={{ padding: '0.5rem 1.5rem' }}>
+            <button className="btn btn-primary" onClick={handleCreate} style={{ padding: '0.5rem 1.25rem', flexShrink: 0, marginLeft: 'auto' }}>
               Save <Send size={16} style={{ marginLeft: '4px' }} />
             </button>
           </div>

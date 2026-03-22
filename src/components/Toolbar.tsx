@@ -8,7 +8,7 @@ interface ToolbarProps {
 
 export const Toolbar: React.FC<ToolbarProps> = ({ onInsert, onTagClick, onLinkClick }) => {
   return (
-    <div style={{ display: 'flex', gap: '0.25rem', color: 'var(--text-muted)' }}>
+    <div style={{ display: 'flex', gap: '0.25rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
       <button type="button" className="btn-icon" title="Grassetto" onClick={() => onInsert('**', '**')}><Bold size={16} /></button>
       <button type="button" className="btn-icon" title="Corsivo" onClick={() => onInsert('*', '*')}><Italic size={16} /></button>
       <button type="button" className="btn-icon" title="Sottolineato" onClick={() => onInsert('<u>', '</u>')}><Underline size={16} /></button>

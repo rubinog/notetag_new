@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { Note } from '../types';
-import { Search, Settings, Tag as TagIcon, Hash, RefreshCw, CheckCircle, AlertTriangle, Cloud } from 'lucide-react';
+import { Search, Settings, Tag as TagIcon, Hash, RefreshCw, CheckCircle, AlertTriangle, Cloud, X } from 'lucide-react';
 import dayjs from 'dayjs';
 import { Calendar } from './Calendar';
 
@@ -12,10 +12,11 @@ interface SidebarProps {
   searchQuery: string;
   setSearchQuery: (val: string) => void;
   syncStatus?: 'idle' | 'syncing' | 'success' | 'error';
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
-  notes, onOpenSettings: onSettingsClick, filterDate, setFilterDate, searchQuery, setSearchQuery, syncStatus = 'idle'
+  notes, onOpenSettings: onSettingsClick, filterDate, setFilterDate, searchQuery, setSearchQuery, syncStatus = 'idle', onCloseMobile
 }) => {
   const [currentCalDate, setCurrentCalDate] = useState(dayjs());
   
@@ -38,9 +39,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div className="glass-panel" style={{ width: '280px', display: 'flex', flexDirection: 'column', zIndex: 10 }}>
       {/* Header */}
-      <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-        <h1 style={{ flex: 1, fontSize: '1.5rem', margin: 0, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>MEMOS</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <img src="/logo.png" width={28} height={28} alt="NoteTag" style={{ borderRadius: '8px', objectFit: 'cover' }} onError={(e) => e.currentTarget.style.display = 'none'} />
+          <h1 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>NOTETAG</h1>
+        </div>
+        
+        {onCloseMobile && (
+          <button className="btn-icon mobile-close-btn" onClick={onCloseMobile} title="Chiudi Menu">
+            <X size={20} />
+          </button>
+        )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           {syncStatus === 'syncing' && <span title="Sincronizzazione in corso..."><RefreshCw size={16} className="spin-animation" style={{ color: 'var(--text-muted)' }} /></span>}
           {syncStatus === 'success' && <span title="Salvato su GitHub"><CheckCircle size={16} style={{ color: 'var(--accent-primary)' }} /></span>}
           {syncStatus === 'error' && <span title="Errore di sincronizzazione"><AlertTriangle size={16} style={{ color: 'var(--danger)' }} /></span>}

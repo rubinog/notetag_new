@@ -67,7 +67,7 @@ export const Calendar: React.FC<CalendarProps> = ({ currentDate, onDateChange, a
         }
         .cal-day.has-note {
           font-weight: bold;
-          border-bottom: 2px solid var(--accent-secondary);
+          border-bottom: 2px solid var(--accent-primary);
         }
       `}} />
     </div>

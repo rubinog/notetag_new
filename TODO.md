@@ -1,15 +1,3 @@
-Visto che la struttura React/Vite che abbiamo impostato è molto flessibile (
+Visto che la struttura React/Vite che abbiamo impostato è molto flessibile (App, Feed, NoteCard, Sidebar, Store), in futuro potremo espanderla facilmente con altre funzionalità come l'aggiunta di immagini tramite drag-and-drop, il login tramite OAuth o l'ottimizzazione per i display mobile se vorrai usarla da smartphone.
 
-App
-, 
-
-Feed
-, 
-
-NoteCard
-, 
-
-Sidebar
-, Store), in futuro potremo espanderla facilmente con altre funzionalità come l'aggiunta di immagini tramite drag-and-drop, il login tramite OAuth o l'ottimizzazione per i display mobile se vorrai usarla da smartphone.
-
-C'è qualcos'altro che ti piacerebbe aggiungere o sistemare adesso, o per il momento ritieni la versione 1.0 conclusa e pronta all'uso?
+Barra laterale collassabile
