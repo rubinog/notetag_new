@@ -1,5 +1,12 @@
-# 📝 NoteTag
-> A beautiful, privacy-first, Memos-inspired note-taking application that syncs natively with your GitHub repository.
+<p align="center">
+  <img src="public/logo.png" alt="NoteTag Logo" width="120" />
+</p>
+
+<h1 align="center">NoteTag</h1>
+
+<p align="center">
+  <i>A beautiful, privacy-first, Memos-inspired note-taking application that syncs natively with your GitHub repository.</i>
+</p>
 
 NoteTag is built for developers and thinkers who want a rapid, distraction-free environment to jot down thoughts, snippets, and ideas. Instead of relying on a proprietary third-party database, **NoteTag uses your own private GitHub repository as the backend**, guaranteeing you 100% ownership and control over your data.
 
