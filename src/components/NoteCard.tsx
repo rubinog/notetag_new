@@ -52,9 +52,10 @@ export const NoteCard: React.FC<{
   note: Note; 
   allNotes?: Note[]; 
   onUpdate: (n: Note) => void; 
-  onDelete: () => void;
+  onDeleteNote: (id: string) => void;
   onCreateComment?: (parentId: string, content: string) => void;
-}> = ({ note, allNotes = [], onUpdate, onDelete, onCreateComment }) => {
+  isComment?: boolean;
+}> = ({ note, allNotes = [], onUpdate, onDeleteNote, onCreateComment, isComment = false }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(note.content);
   const [showMenu, setShowMenu] = useState(false);
@@ -130,7 +131,20 @@ export const NoteCard: React.FC<{
   };
 
   return (
-    <div id={note.id} className="note-card-container" style={{ background: 'var(--bg-panel)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-sm)', position: 'relative' }}>
+    <div 
+      id={note.id} 
+      className="note-card-container" 
+      style={{ 
+        background: isComment ? 'transparent' : 'var(--bg-panel)', 
+        padding: isComment ? '0.75rem 0 0 1rem' : '1.25rem', 
+        borderRadius: isComment ? '0' : '12px', 
+        border: isComment ? 'none' : '1px solid var(--border-soft)', 
+        borderLeft: isComment ? '2px solid var(--border-soft)' : '1px solid var(--border-soft)',
+        boxShadow: isComment ? 'none' : 'var(--shadow-sm)', 
+        position: 'relative',
+        marginBottom: isComment ? '0.5rem' : '0'
+      }}
+    >
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
@@ -227,13 +241,19 @@ export const NoteCard: React.FC<{
           <div className="markdown-body" onClick={handleContentClick} dangerouslySetInnerHTML={{ __html: md.render(note.content) }} />
           
           {/* Nested Comments */}
+          {/* Nested Comments (Recursive NoteCard) */}
           {allNotes.filter(n => n.frontmatter.parentId === note.id).length > 0 && (
-            <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px dashed var(--border-soft)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {allNotes.filter(n => n.frontmatter.parentId === note.id).map(child => (
-                <div key={child.id} style={{ paddingLeft: '1rem', borderLeft: '3px solid var(--border-soft)' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{dayjs(child.frontmatter['updated-at']).fromNow()}</span>
-                  <div className="markdown-body" style={{ fontSize: '0.9rem' }} dangerouslySetInnerHTML={{ __html: md.render(child.content) }} />
-                </div>
+                <NoteCard 
+                  key={child.id}
+                  note={child}
+                  allNotes={allNotes}
+                  onUpdate={onUpdate}
+                  onDeleteNote={onDeleteNote}
+                  onCreateComment={onCreateComment}
+                  isComment={true}
+                />
               ))}
             </div>
           )}
@@ -256,8 +276,8 @@ export const NoteCard: React.FC<{
                   onLinkClick={() => { setLinkTarget('reply'); setShowLinkModal(true); }} 
                 />
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button className="btn" onClick={() => setIsReplying(false)}>Cancel</button>
-                  <button className="btn btn-primary" onClick={() => { if(onCreateComment){ onCreateComment(note.id, replyContent); setReplyContent(''); setIsReplying(false); } }}>Reply</button>
+                  <button className="btn" onClick={() => setIsReplying(false)}>Annulla</button>
+                  <button className="btn btn-primary" onClick={() => { if(onCreateComment){ onCreateComment(note.id, replyContent); setReplyContent(''); setIsReplying(false); } }}>Rispondi</button>
                 </div>
               </div>
 
@@ -299,7 +319,7 @@ export const NoteCard: React.FC<{
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
               <button className="btn" onClick={() => setShowDeleteConfirm(false)}>Annulla</button>
-              <button className="btn" style={{ background: 'var(--danger)', color: 'white', border: 'none' }} onClick={() => { onDelete(); setShowDeleteConfirm(false); }}>
+              <button className="btn" style={{ background: 'var(--danger)', color: 'white', border: 'none' }} onClick={() => { onDeleteNote(note.id); setShowDeleteConfirm(false); }}>
                 Elimina
               </button>
             </div>

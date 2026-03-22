@@ -104,7 +104,7 @@ export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCre
               note={note} 
               allNotes={allNotes}
               onUpdate={onUpdateNote} 
-              onDelete={() => onDeleteNote(note.id)} 
+              onDeleteNote={onDeleteNote} 
               onCreateComment={onCreateComment}
             />
           ))}
