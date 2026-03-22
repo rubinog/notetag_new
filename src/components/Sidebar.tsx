@@ -101,9 +101,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {tagsCount.map(([tag, count]) => (
-              <div key={tag} style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-main)', fontSize: '0.9rem', cursor: 'pointer', padding: '0.25rem 0' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Hash size={14} color="var(--text-muted)"/> {tag}</span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{count}</span>
+              <div 
+                key={tag} 
+                onClick={() => setSearchQuery(tag === searchQuery ? '' : tag)}
+                className="hover-scale"
+                style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  color: tag === searchQuery ? 'var(--accent-primary)' : 'var(--text-main)', 
+                  fontWeight: tag === searchQuery ? 700 : 400,
+                  fontSize: '0.9rem', 
+                  cursor: 'pointer', 
+                  padding: '0.4rem 0.75rem',
+                  margin: '0 -0.75rem',
+                  borderRadius: '6px',
+                  background: tag === searchQuery ? 'var(--accent-glow)' : 'transparent'
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <Hash size={14} color={tag === searchQuery ? 'var(--accent-primary)' : 'var(--text-muted)'}/> 
+                  {tag}
+                </span>
+                <span style={{ color: tag === searchQuery ? 'var(--accent-primary)' : 'var(--text-muted)', fontSize: '0.8rem' }}>{count}</span>
               </div>
             ))}
             {tagsCount.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No tags yet.</span>}
