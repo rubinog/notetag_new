@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface CalendarProps {
   currentDate: dayjs.Dayjs;
   onDateChange: (date: dayjs.Dayjs) => void;
-  activeDates: string[]; // ISO string prefixes, e.g., '2026-03-21'
+  activeDates: string[]; // ISO string prefixes, e.g., '2026-03-22'
 }
 
 export const Calendar: React.FC<CalendarProps> = ({ currentDate, onDateChange, activeDates }) => {
@@ -53,10 +53,12 @@ export const Calendar: React.FC<CalendarProps> = ({ currentDate, onDateChange, a
       </div>
       <style dangerouslySetInnerHTML={{__html: `
         .cal-day {
+          position: relative;
           padding: 0.4rem 0;
           border-radius: 6px;
           cursor: pointer;
           color: var(--text-main);
+          transition: all 0.2s ease;
         }
         .cal-day:hover:not(.empty) {
           background: var(--bg-panel-hover);
@@ -64,10 +66,21 @@ export const Calendar: React.FC<CalendarProps> = ({ currentDate, onDateChange, a
         .cal-day.today {
           background: var(--accent-primary);
           color: white;
-        }
-        .cal-day.has-note {
           font-weight: bold;
-          border-bottom: 2px solid var(--accent-primary);
+        }
+        .cal-day.has-note::after {
+          content: '';
+          position: absolute;
+          bottom: 4px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 4px;
+          height: 4px;
+          background: var(--accent-primary);
+          border-radius: 50%;
+        }
+        .cal-day.today.has-note::after {
+          background: white;
         }
       `}} />
     </div>
