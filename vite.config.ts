@@ -15,12 +15,20 @@ export default defineConfig({
         theme_color: '#3b82f6',
         background_color: '#ffffff',
         display: 'standalone',
+        start_url: '/',
+        scope: '/',
         icons: [
           {
             src: 'logo.png',
             sizes: '192x192 512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          {
+            src: 'logo.png',
+            sizes: '192x192 512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           },
           {
             src: 'favicon.svg',
