@@ -26,9 +26,7 @@ function App() {
     document.documentElement.style.setProperty('--accent-primary', accentColor);
   }, [accentColor]);
 
-  useEffect(() => {
-    document.documentElement.style.setProperty('--font-main', fontFamily);
-  }, [fontFamily]);
+
 
   // Wrappers for Auto-Sync
   const handleSaveNote = async (note: Note) => {
