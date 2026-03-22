@@ -28,11 +28,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [activeTab, setActiveTab] = useState('general');
 
   const fontOptions = [
-    { label: 'Inter (Modern Sans-serif)', value: "'Inter', sans-serif" },
-    { label: 'Outfit (Sleek Sans-serif)', value: "'Outfit', sans-serif" },
-    { label: 'Merriweather (Classic Serif)', value: "'Merriweather', serif" },
-    { label: 'Playfair Display (Premium Serif)', value: "'Playfair Display', serif" },
-    { label: 'Fira Code (Developer Mono)', value: "'Fira Code', monospace" }
+    { label: 'Inter', value: 'Inter, sans-serif' },
+    { label: 'Outfit', value: 'Outfit, sans-serif' },
+    { label: 'Delius', value: 'Delius, cursive' },
+    { label: 'Playwrite PL', value: '"Playwrite PL", cursive' },
+    { label: 'Fira Code', value: '"Fira Code", monospace' },
   ];
 
   const handleSave = (e: React.FormEvent) => {
