@@ -57,8 +57,7 @@ md.renderer.rules.fence = function(tokens, idx, options) {
   const highlighted = options.highlight ? options.highlight(token.content, langName, '') : md.utils.escapeHtml(token.content);
   
   return `<div class="code-block-wrapper">
-    ${langName ? `<div class="code-lang-label">${langName}</div>` : ''}
-    <pre class="hljs"><code>${highlighted || md.utils.escapeHtml(token.content)}</code></pre>
+    <pre class="hljs">${langName ? `<span class="code-lang-label">${langName}</span>` : ''}<code>${highlighted || md.utils.escapeHtml(token.content)}</code></pre>
   </div>`;
 };
 

@@ -42,7 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <img src="/logo.png" width={28} height={28} alt="NoteTag" style={{ borderRadius: '8px', objectFit: 'cover' }} onError={(e) => e.currentTarget.style.display = 'none'} />
-          <h1 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>NOTETAG</h1>
+          <h1 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>NoteTag</h1>
         </div>
         
         {onCloseMobile && (

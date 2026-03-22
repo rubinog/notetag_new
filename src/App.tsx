@@ -134,7 +134,7 @@ function App() {
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <img src="/logo.png" width={24} height={24} alt="NoteTag" style={{ borderRadius: '6px' }} onError={(e) => e.currentTarget.style.display = 'none'} />
-          <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>NOTETAG</h1>
+          <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>NoteTag</h1>
         </div>
       </div>
 
