@@ -31,7 +31,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     { label: 'Inter', value: 'Inter, sans-serif' },
     { label: 'Outfit', value: 'Outfit, sans-serif' },
     { label: 'Delius', value: 'Delius, cursive' },
-    { label: 'Playwrite PL', value: '"Playwrite PL", cursive' },
+    { label: 'The Girl Next Door', value: "'The Girl Next Door', cursive" },
     { label: 'Fira Code', value: '"Fira Code", monospace' },
   ];
 
