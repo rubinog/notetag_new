@@ -135,14 +135,14 @@ export const NoteCard: React.FC<{
       id={note.id} 
       className="note-card-container" 
       style={{ 
-        background: isComment ? 'transparent' : 'var(--bg-panel)', 
-        padding: isComment ? '0.75rem 0 0 1rem' : '1.25rem', 
-        borderRadius: isComment ? '0' : '12px', 
-        border: isComment ? 'none' : '1px solid var(--border-soft)', 
-        borderLeft: isComment ? '2px solid var(--border-soft)' : '1px solid var(--border-soft)',
+        background: isComment ? 'rgba(0,0,0,0.015)' : 'var(--bg-panel)', 
+        padding: isComment ? '0.75rem 1rem' : '1.25rem', 
+        borderRadius: isComment ? '8px' : '12px', 
+        border: '1px solid var(--border-soft)', 
+        borderLeft: isComment ? '4px solid var(--border-soft)' : '1px solid var(--border-soft)',
         boxShadow: isComment ? 'none' : 'var(--shadow-sm)', 
         position: 'relative',
-        marginBottom: isComment ? '0.5rem' : '0'
+        marginBottom: isComment ? '0.25rem' : '0'
       }}
     >
       
@@ -299,7 +299,7 @@ export const NoteCard: React.FC<{
           
           {/* Nested Comments (Recursive NoteCard) */}
           {allNotes.filter(n => n.frontmatter.parentId === note.id).length > 0 && (
-            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '1.25rem', borderLeft: '1px dashed var(--border-soft)' }}>
               {allNotes.filter(n => n.frontmatter.parentId === note.id).map(child => (
                 <NoteCard 
                   key={child.id}
