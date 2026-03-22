@@ -47,6 +47,19 @@ If you want to run NoteTag locally on your machine:
    npm run build
    ```
 
+## 🐳 Docker Deployment
+
+For a production-ready environment, you can deploy NoteTag using Docker:
+
+1. **Build and Run with Docker Compose**
+   ```bash
+   docker-compose up --build -d
+   ```
+2. **Access the Application**
+   Open `http://localhost:8080` in your browser.
+
+The Docker image uses a multi-stage build (Node -> Nginx) to ensure a minimal footprint and optimal performance with built-in SPA routing and Gzip compression.
+
 ## ⚙️ How to configure GitHub Sync
 
 To enable cloud synchronization:
