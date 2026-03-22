@@ -15,7 +15,9 @@ async function fetchFromGitHub(endpoint: string, creds: GitHubCredentials, optio
   });
   
   if (!response.ok) {
-    throw new Error(`GitHub API Error: ${response.status} ${response.statusText}`);
+    const error = new Error(`GitHub API Error: ${response.status} ${response.statusText}`);
+    (error as any).status = response.status;
+    throw error;
   }
   
   // if 204 No Content, don't parse json
@@ -132,6 +134,7 @@ export async function pushSingleNote(creds: GitHubCredentials, note: Note): Prom
       sha = fileData.sha;
     }
   } catch (err: any) {
+    if (err.status !== 404) throw err;
     // 404 is fine, means file doesn't exist yet
   }
 
@@ -167,7 +170,8 @@ export async function deleteSingleNote(creds: GitHubCredentials, noteId: string)
         })
       });
     }
-  } catch (err) {
+  } catch (err: any) {
+    if (err.status !== 404) throw err;
     // ignore 404
   }
 }
