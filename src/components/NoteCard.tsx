@@ -170,8 +170,24 @@ export const NoteCard: React.FC<{
         </div>
       </div>
 
+      <LinkModal 
+        isOpen={showLinkModal} 
+        onClose={() => setShowLinkModal(false)} 
+        allNotes={allNotes}
+        onSelect={(targetNote) => {
+          const fallbackTitle = targetNote.content.split('\n')[0].replace(/^[#*-]\s+/, '').substring(0, 30);
+          const title = targetNote.frontmatter.title || fallbackTitle;
+          const link = `[${title}](#${targetNote.id})`;
+          if (linkTarget === 'edit') {
+            handleInsert(link);
+          } else {
+            insertTextAtCursor(replyRef.current, link, '', setReplyContent);
+          }
+        }}
+      />
+
       {isEditing ? (
-        <div style={{ background: 'rgba(0,0,0,0.02)', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-soft)' }}>
+        <div id={note.id + "-edit"} style={{ background: 'rgba(0,0,0,0.02)', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-soft)' }}>
           <textarea 
             ref={textareaRef}
             style={{ width: '100%', minHeight: '100px', background: 'transparent', border: 'none', outline: 'none', resize: 'vertical' }}
@@ -188,21 +204,6 @@ export const NoteCard: React.FC<{
         </div>
       ) : (
         <>
-          <LinkModal 
-            isOpen={showLinkModal} 
-            onClose={() => setShowLinkModal(false)} 
-            allNotes={allNotes}
-            onSelect={(targetNote) => {
-              const fallbackTitle = targetNote.content.split('\n')[0].replace(/^[#*-]\s+/, '').substring(0, 30);
-              const title = targetNote.frontmatter.title || fallbackTitle;
-              const link = `[${title}](#${targetNote.id})`;
-              if (linkTarget === 'edit') {
-                handleInsert(link);
-              } else {
-                insertTextAtCursor(replyRef.current, link, '', setReplyContent);
-              }
-            }}
-          />
           <div className="markdown-body" onClick={handleContentClick} dangerouslySetInnerHTML={{ __html: md.render(note.content) }} />
           
           {/* Nested Comments */}
