@@ -48,6 +48,24 @@ const md = markdownit({
   }
 }).use(taskLists, { enabled: true }).use(hashtagPlugin);
 
+// Custom fence renderer to add language label
+const defaultFence = md.renderer.rules.fence || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+
+md.renderer.rules.fence = function(tokens, idx, options, env, self) {
+  const token = tokens[idx];
+  const info = token.info ? md.utils.unescapeAll(token.info).trim() : '';
+  const langName = info.split(/\s+/g)[0];
+  
+  const highlighted = options.highlight ? options.highlight(token.content, langName) : md.utils.escapeHtml(token.content);
+  
+  return `<div class="code-block-wrapper">
+    ${langName ? `<div class="code-lang-label">${langName}</div>` : ''}
+    <pre class="hljs"><code>${highlighted || md.utils.escapeHtml(token.content)}</code></pre>
+  </div>`;
+};
+
 export const NoteCard: React.FC<{ 
   note: Note; 
   allNotes?: Note[]; 

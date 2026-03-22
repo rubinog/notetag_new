@@ -192,11 +192,29 @@ input:focus, textarea:focus {
   font-size: 0.9em;
 }
 .markdown-body pre {
-  background: #000;
+  background: var(--bg-base);
   padding: 1rem;
+  padding-top: 2rem;
   border-radius: 8px;
   overflow-x: auto;
   border: 1px solid var(--border-soft);
+  position: relative;
+}
+.markdown-body .code-block-wrapper {
+  position: relative;
+  margin: 1.5rem 0;
+}
+.markdown-body .code-lang-label {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  user-select: none;
+  font-family: var(--font-sans);
+  pointer-events: none;
 }
 .markdown-body pre code {
   background: transparent;
