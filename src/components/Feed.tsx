@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import type { Note } from '../types';
 import { NoteCard } from './NoteCard';
-import { Send, Maximize2, Minimize2, X, Search } from 'lucide-react';
+import { Send, Maximize2, Minimize2 } from 'lucide-react';
 import { Toolbar, insertTextAtCursor } from './Toolbar';
-import dayjs from 'dayjs';
+import { LinkModal } from './LinkModal';
 
 interface FeedProps {
   notes: Note[];
@@ -18,7 +18,6 @@ export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCre
   const [newContent, setNewContent] = useState('');
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
-  const [linkSearch, setLinkSearch] = useState('');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -34,12 +33,6 @@ export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCre
   };
 
   const allTags = Array.from(new Set(allNotes.flatMap(n => n.frontmatter.tags || [])));
-  
-  const filteredLinkNotes = allNotes.filter(n => {
-    const fallbackTitle = n.content.split('\n')[0].substring(0, 40);
-    const title = (n.frontmatter.title || fallbackTitle).toLowerCase();
-    return title.includes(linkSearch.toLowerCase()) || n.content.toLowerCase().includes(linkSearch.toLowerCase());
-  }).slice(0, 10);
 
   const composerStyle: React.CSSProperties = isFocusMode 
     ? { position: 'fixed', top: '5%', left: '50%', transform: 'translateX(-50%)', width: '90%', maxWidth: '900px', height: '90%', zIndex: 100, background: 'var(--bg-panel)', padding: '2rem', borderRadius: '16px', boxShadow: 'var(--shadow-glass)', display: 'flex', flexDirection: 'column' }
@@ -50,36 +43,18 @@ export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCre
       
       {isFocusMode && <div className="modal-backdrop" onClick={() => setIsFocusMode(false)} />}
       
-      {showLinkModal && (
-        <div className="modal-backdrop" onClick={() => setShowLinkModal(false)} style={{ zIndex: 110 }}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3>Collega Nota</h3>
-              <button className="btn-icon" onClick={() => setShowLinkModal(false)}><X size={16}/></button>
-            </div>
-            <div style={{ position: 'relative', marginBottom: '1rem' }}>
-              <Search size={14} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--text-muted)' }} />
-              <input autoFocus value={linkSearch} onChange={e => setLinkSearch(e.target.value)} placeholder="Cerca nota..." style={{ width: '100%', paddingLeft: '2rem' }} />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '300px', overflowY: 'auto' }}>
-              {filteredLinkNotes.map(n => {
-                const firstLine = n.content.split('\n')[0].replace(/^[#*-]\s+/, '').substring(0, 40) || 'Nota senza testo';
-                const displayTitle = n.frontmatter.title || firstLine;
-                return (
-                  <div key={n.id} onClick={() => { handleInsert(`[${displayTitle}](#${n.id})`); setShowLinkModal(false); }} style={{ padding: '0.75rem', border: '1px solid var(--border-soft)', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', marginBottom: '0.5rem', background: 'var(--bg-base)' }}>
-                    <div style={{ fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.25rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {displayTitle}
-                    </div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                      {dayjs(n.frontmatter['updated-at'] || n.frontmatter['created-at']).format('DD MMM YYYY, HH:mm')} &middot; {n.content.length} caratteri
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
+      {isFocusMode && <div className="modal-backdrop" onClick={() => setIsFocusMode(false)} />}
+      
+      <LinkModal 
+        isOpen={showLinkModal} 
+        onClose={() => setShowLinkModal(false)} 
+        allNotes={allNotes}
+        onSelect={(targetNote) => {
+          const fallbackTitle = targetNote.content.split('\n')[0].replace(/^[#*-]\s+/, '').substring(0, 30);
+          const title = targetNote.frontmatter.title || fallbackTitle;
+          handleInsert(`[${title}](#${targetNote.id})`);
+        }}
+      />
 
       <div style={{ maxWidth: '800px', margin: '0 auto', position: isFocusMode ? 'static' : 'relative' }}>
         {/* Composer */}

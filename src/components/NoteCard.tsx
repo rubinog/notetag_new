@@ -10,6 +10,7 @@ import 'highlight.js/styles/github.css';
 import { MoreVertical, Trash2, Edit2, X, Check, Reply, AlertTriangle } from 'lucide-react';
 import { stringifyMarkdown } from '../utils/markdown';
 import { Toolbar, insertTextAtCursor } from './Toolbar';
+import { LinkModal } from './LinkModal';
 
 dayjs.extend(relativeTime);
 
@@ -60,6 +61,8 @@ export const NoteCard: React.FC<{
   const [isReplying, setIsReplying] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkTarget, setLinkTarget] = useState<'edit' | 'reply'>('edit');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const replyRef = useRef<HTMLTextAreaElement>(null);
@@ -176,7 +179,7 @@ export const NoteCard: React.FC<{
             onChange={e => setEditContent(e.target.value)}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', borderTop: '1px solid var(--border-soft)', paddingTop: '0.5rem' }}>
-            <Toolbar onInsert={handleInsert} />
+            <Toolbar onInsert={handleInsert} onLinkClick={() => { setLinkTarget('edit'); setShowLinkModal(true); }} />
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button className="btn" onClick={() => setIsEditing(false)}><X size={14}/> Cancel</button>
               <button className="btn btn-primary" onClick={handleSave}><Check size={14}/> Save</button>
@@ -185,6 +188,21 @@ export const NoteCard: React.FC<{
         </div>
       ) : (
         <>
+          <LinkModal 
+            isOpen={showLinkModal} 
+            onClose={() => setShowLinkModal(false)} 
+            allNotes={allNotes}
+            onSelect={(targetNote) => {
+              const fallbackTitle = targetNote.content.split('\n')[0].replace(/^[#*-]\s+/, '').substring(0, 30);
+              const title = targetNote.frontmatter.title || fallbackTitle;
+              const link = `[${title}](#${targetNote.id})`;
+              if (linkTarget === 'edit') {
+                handleInsert(link);
+              } else {
+                insertTextAtCursor(replyRef.current, link, '', setReplyContent);
+              }
+            }}
+          />
           <div className="markdown-body" onClick={handleContentClick} dangerouslySetInnerHTML={{ __html: md.render(note.content) }} />
           
           {/* Nested Comments */}
@@ -211,7 +229,7 @@ export const NoteCard: React.FC<{
                 autoFocus
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                <Toolbar onInsert={(pre, suf) => insertTextAtCursor(replyRef.current, pre, suf, setReplyContent)} />
+                <Toolbar onInsert={(pre, suf) => insertTextAtCursor(replyRef.current, pre, suf, setReplyContent)} onLinkClick={() => { setLinkTarget('reply'); setShowLinkModal(true); }} />
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button className="btn" onClick={() => setIsReplying(false)}>Cancel</button>
                   <button className="btn btn-primary" onClick={() => { if(onCreateComment){ onCreateComment(note.id, replyContent); setReplyContent(''); setIsReplying(false); } }}>Reply</button>
