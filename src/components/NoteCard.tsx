@@ -195,12 +195,32 @@ export const NoteCard: React.FC<{
             onChange={e => setEditContent(e.target.value)}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', borderTop: '1px solid var(--border-soft)', paddingTop: '0.5rem' }}>
-            <Toolbar onInsert={handleInsert} onLinkClick={() => { setLinkTarget('edit'); setShowLinkModal(true); }} />
+            <Toolbar 
+              onInsert={handleInsert} 
+              onTagClick={() => handleInsert('#')}
+              onLinkClick={() => { setLinkTarget('edit'); setShowLinkModal(true); }} 
+            />
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button className="btn" onClick={() => setIsEditing(false)}><X size={14}/> Cancel</button>
               <button className="btn btn-primary" onClick={handleSave}><Check size={14}/> Save</button>
             </div>
           </div>
+          
+          {/* Quick Tags in Edit Mode */}
+          {allNotes && (
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
+              {Array.from(new Set(allNotes.flatMap(n => n.frontmatter.tags || []))).map(tag => (
+                <div 
+                  key={tag} 
+                  className="hover-scale"
+                  style={{ background: 'var(--bg-base)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', color: 'var(--text-muted)', border: '1px solid var(--border-soft)', cursor: 'pointer' }}
+                  onClick={() => handleInsert(`#${tag} `)}
+                >
+                  #{tag}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <>
@@ -230,12 +250,32 @@ export const NoteCard: React.FC<{
                 autoFocus
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                <Toolbar onInsert={(pre, suf) => insertTextAtCursor(replyRef.current, pre, suf, setReplyContent)} onLinkClick={() => { setLinkTarget('reply'); setShowLinkModal(true); }} />
+                <Toolbar 
+                  onInsert={(pre, suf) => insertTextAtCursor(replyRef.current, pre, suf, setReplyContent)} 
+                  onTagClick={() => insertTextAtCursor(replyRef.current, '#', '', setReplyContent)}
+                  onLinkClick={() => { setLinkTarget('reply'); setShowLinkModal(true); }} 
+                />
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button className="btn" onClick={() => setIsReplying(false)}>Cancel</button>
                   <button className="btn btn-primary" onClick={() => { if(onCreateComment){ onCreateComment(note.id, replyContent); setReplyContent(''); setIsReplying(false); } }}>Reply</button>
                 </div>
               </div>
+
+              {/* Quick Tags in Reply Mode */}
+              {allNotes && (
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
+                  {Array.from(new Set(allNotes.flatMap(n => n.frontmatter.tags || []))).map(tag => (
+                    <div 
+                      key={tag} 
+                      className="hover-scale"
+                      style={{ background: 'var(--bg-base)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', color: 'var(--text-muted)', border: '1px solid var(--border-soft)', cursor: 'pointer' }}
+                      onClick={() => insertTextAtCursor(replyRef.current, `#${tag} `, '', setReplyContent)}
+                    >
+                      #{tag}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </>
