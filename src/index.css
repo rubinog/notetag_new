@@ -182,7 +182,7 @@ input:focus, textarea:focus {
   font-weight: 600;
 }
 .markdown-body p { margin-bottom: 1em; }
-.markdown-body a { color: var(--accent-secondary); text-decoration: none; }
+.markdown-body a { color: var(--accent-primary); text-decoration: none; }
 .markdown-body a:hover { text-decoration: underline; }
 .markdown-body code {
   font-family: var(--font-mono);
