@@ -78,7 +78,7 @@ body {
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
-  font-family: var(--font-sans);
+  font-family: var(--font-main);
   font-weight: 500;
   transition: all var(--transition-fast);
   display: inline-flex;
@@ -174,7 +174,7 @@ input:focus, textarea:focus {
 
 /* Markdown Content Styles */
 .markdown-body {
-  font-family: var(--font-sans);
+  font-family: var(--font-main);
   line-height: 1.6;
   color: var(--text-main);
 }
@@ -220,7 +220,7 @@ input:focus, textarea:focus {
   border-bottom-left-radius: 6px;
   border-top-right-radius: 6px;
   user-select: none;
-  font-family: var(--font-sans);
+  font-family: var(--font-main);
   pointer-events: none;
   letter-spacing: 0.05em;
 }
