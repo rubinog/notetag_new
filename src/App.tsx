@@ -137,6 +137,8 @@ function App() {
           onCreateComment={(parentId, c) => handleCreateNew(c, parentId)}
           onUpdateNote={handleSaveNote}
           onDeleteNote={handleDeleteNote}
+          searchQuery={searchQuery}
+          filterDate={filterDate}
         />
       </div>
 

@@ -147,9 +147,19 @@ export const NoteCard: React.FC<{
     >
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          {dayjs(note.frontmatter['updated-at']).fromNow()}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            {dayjs(note.frontmatter['updated-at']).fromNow()}
+          </span>
+          <button 
+            className="btn-icon" 
+            title="Rispondi"
+            style={{ padding: '0.2rem', color: 'var(--text-muted)' }}
+            onClick={() => setIsReplying(!isReplying)}
+          >
+            <Reply size={14} />
+          </button>
+        </div>
         
         <div style={{ position: 'relative' }}>
           <button className="btn-icon" onClick={() => setShowMenu(!showMenu)}><MoreVertical size={16}/></button>
@@ -239,26 +249,8 @@ export const NoteCard: React.FC<{
       ) : (
         <>
           <div className="markdown-body" onClick={handleContentClick} dangerouslySetInnerHTML={{ __html: md.render(note.content) }} />
-          
-          {/* Nested Comments */}
-          {/* Nested Comments (Recursive NoteCard) */}
-          {allNotes.filter(n => n.frontmatter.parentId === note.id).length > 0 && (
-            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {allNotes.filter(n => n.frontmatter.parentId === note.id).map(child => (
-                <NoteCard 
-                  key={child.id}
-                  note={child}
-                  allNotes={allNotes}
-                  onUpdate={onUpdate}
-                  onDeleteNote={onDeleteNote}
-                  onCreateComment={onCreateComment}
-                  isComment={true}
-                />
-              ))}
-            </div>
-          )}
-          
-          {/* Reply Box */}
+
+          {/* Reply Box (Now above comments for better visibility) */}
           {isReplying && (
             <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.02)', borderRadius: '8px', border: '1px solid var(--border-soft)' }}>
               <textarea 
@@ -277,11 +269,17 @@ export const NoteCard: React.FC<{
                 />
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button className="btn" onClick={() => setIsReplying(false)}>Annulla</button>
-                  <button className="btn btn-primary" onClick={() => { if(onCreateComment){ onCreateComment(note.id, replyContent); setReplyContent(''); setIsReplying(false); } }}>Rispondi</button>
+                  <button className="btn btn-primary" onClick={() => { 
+                    if(!replyContent.trim()) return;
+                    if(onCreateComment){ 
+                      onCreateComment(note.id, replyContent); 
+                      setReplyContent(''); 
+                      setIsReplying(false); 
+                    } 
+                  }}>Rispondi</button>
                 </div>
               </div>
 
-              {/* Quick Tags in Reply Mode */}
               {allNotes && (
                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
                   {Array.from(new Set(allNotes.flatMap(n => n.frontmatter.tags || []))).map(tag => (
@@ -296,6 +294,23 @@ export const NoteCard: React.FC<{
                   ))}
                 </div>
               )}
+            </div>
+          )}
+          
+          {/* Nested Comments (Recursive NoteCard) */}
+          {allNotes.filter(n => n.frontmatter.parentId === note.id).length > 0 && (
+            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {allNotes.filter(n => n.frontmatter.parentId === note.id).map(child => (
+                <NoteCard 
+                  key={child.id}
+                  note={child}
+                  allNotes={allNotes}
+                  onUpdate={onUpdate}
+                  onDeleteNote={onDeleteNote}
+                  onCreateComment={onCreateComment}
+                  isComment={true}
+                />
+              ))}
             </div>
           )}
         </>

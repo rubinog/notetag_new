@@ -12,9 +12,14 @@ interface FeedProps {
   onCreateComment: (parentId: string, content: string) => void;
   onUpdateNote: (note: Note) => void;
   onDeleteNote: (id: string) => void;
+  searchQuery?: string;
+  filterDate?: any; // dayjs group
 }
 
-export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCreateComment, onUpdateNote, onDeleteNote }) => {
+export const Feed: React.FC<FeedProps> = ({ 
+  notes, allNotes, onCreateNote, onCreateComment, onUpdateNote, onDeleteNote,
+  searchQuery, filterDate
+}) => {
   const [newContent, setNewContent] = useState('');
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
@@ -98,7 +103,7 @@ export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCre
 
         {/* Feed List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {notes.filter(n => !n.frontmatter.parentId).map(note => (
+          {notes.filter(n => (filterDate || searchQuery) ? true : !n.frontmatter.parentId).map(note => (
             <NoteCard 
               key={note.id} 
               note={note} 
@@ -108,7 +113,7 @@ export const Feed: React.FC<FeedProps> = ({ notes, allNotes, onCreateNote, onCre
               onCreateComment={onCreateComment}
             />
           ))}
-          {notes.filter(n => !n.frontmatter.parentId).length === 0 && (
+          {notes.filter(n => (filterDate || searchQuery) ? true : !n.frontmatter.parentId).length === 0 && (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '2rem' }}>
               No notes yet. Share your first thought above!
             </div>
