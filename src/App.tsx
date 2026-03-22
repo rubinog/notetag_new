@@ -9,6 +9,16 @@ import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import type { Note } from './types';
 
+// Custom type for the PWA install event
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+
 function App() {
   const { notes, saveNote, deleteNote, setAllNotes } = useNotes();
   const { creds, saveCreds, clearCreds } = useGitHubCredentials();
@@ -20,6 +30,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [accentColor, setAccentColor] = useState(() => localStorage.getItem('notetag-accent') || '#3b82f6');
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     localStorage.setItem('notetag-accent', accentColor);
@@ -29,6 +40,22 @@ function App() {
   useEffect(() => {
     document.documentElement.style.setProperty('--font-main', fontFamily);
   }, [fontFamily]);
+
+  // PWA Install Prompt Listener
+  useEffect(() => {
+    const handler = (e: Event) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setInstallPrompt(e as BeforeInstallPromptEvent);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+    };
+  }, []);
 
   // Wrappers for Auto-Sync
   const handleSaveNote = async (note: Note) => {
@@ -50,26 +77,22 @@ function App() {
   const handleDeleteNote = async (noteId: string) => {
     const notesToDelete: Note[] = [];
 
-    // Recursive function to find all descendants
     const findDescendants = (currentNoteId: string) => {
       const children = notes.filter(n => n.frontmatter.parentId === currentNoteId);
       children.forEach(child => {
         notesToDelete.push(child);
-        findDescendants(child.id); // Recurse for children's children
+        findDescendants(child.id);
       });
     };
 
-    // Add the initial note to delete
     const mainNote = notes.find(n => n.id === noteId);
     if (mainNote) {
       notesToDelete.push(mainNote);
       findDescendants(noteId);
     }
 
-    // Perform local deletion first
     notesToDelete.forEach(note => deleteNote(note.id));
 
-    // Perform GitHub deletion if credentials exist
     if (creds) {
       setSyncStatus('syncing');
       try {
@@ -81,6 +104,7 @@ function App() {
       } catch (err) {
         console.error('Auto-sync delete failed:', err);
         setSyncStatus('error');
+        setSyncStatus('error');
         setTimeout(() => setSyncStatus('idle'), 5000);
       }
     }
@@ -88,8 +112,6 @@ function App() {
 
   const handleCreateNew = (content: string, parentId?: string) => {
     const now = dayjs().toISOString();
-    
-    // Auto-extract #hashtags from the content
     const extractedTags = Array.from(content.matchAll(/(?:^|\s)#([\w\u00C0-\u017F-]+)/g)).map(m => m[1]);
     const uniqueTags = [...new Set(extractedTags)];
 
@@ -132,7 +154,6 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Mobile Top Header */}
       <div className="mobile-header">
         <button className="btn-icon" onClick={() => setIsMobileMenuOpen(true)}>
           <Menu size={24} style={{ color: 'var(--text-main)' }} />
@@ -182,6 +203,8 @@ function App() {
           setAccentColor={setAccentColor}
           fontFamily={fontFamily}
           setFontFamily={setFontFamily}
+          installPrompt={installPrompt}
+          onInstallSuccess={() => setInstallPrompt(null)}
         />
       )}
     </div>

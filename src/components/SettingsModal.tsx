@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { GitHubCredentials, Note } from '../types';
 import { pullNotes, pushNotes } from '../github';
-import { Settings, RefreshCw, UploadCloud, DownloadCloud, Type, Palette, X, Info } from 'lucide-react';
+import { Settings, RefreshCw, UploadCloud, DownloadCloud, Type, Palette, X, Info, Download } from 'lucide-react';
 
 interface SettingsModalProps {
   creds: GitHubCredentials | null;
@@ -14,10 +14,14 @@ interface SettingsModalProps {
   setAccentColor: (color: string) => void;
   fontFamily: string;
   setFontFamily: (font: string) => void;
+  installPrompt?: any; // BeforeInstallPromptEvent
+  onInstallSuccess?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ 
-  creds, onSaveCreds, onClearCreds, onClose, localNotes, onSyncComplete, accentColor, setAccentColor, fontFamily, setFontFamily
+  creds, onSaveCreds, onClearCreds, onClose, localNotes, onSyncComplete, 
+  accentColor, setAccentColor, fontFamily, setFontFamily,
+  installPrompt, onInstallSuccess
 }) => {
   const [token, setToken] = useState(creds?.token || '');
   const [owner, setOwner] = useState(creds?.owner || '');
@@ -70,6 +74,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }
   };
 
+  const handleInstallClick = async () => {
+    if (!installPrompt) return;
+    
+    // Show the installation prompt
+    installPrompt.prompt();
+    
+    // Wait for the user to respond to the prompt
+    const { outcome } = await installPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('User accepted the PWA install prompt');
+      onInstallSuccess?.();
+    } else {
+      console.log('User dismissed the PWA install prompt');
+    }
+  };
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -108,6 +129,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
             </div>
 
+            {/* PWA Install Section */}
+            {installPrompt && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ padding: '1.5rem', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '12px', border: '1px solid var(--accent-primary)', animation: 'pulse-border 2s infinite' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-main)', fontWeight: '600' }}>
+                    <Download size={18} style={{ color: 'var(--accent-primary)' }}/> Installa NoteTag
+                  </div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.5', marginBottom: '1.25rem' }}>
+                    <p>Puoi installare NoteTag come un'applicazione nativa sul tuo PC o Smartphone per un accesso rapido e supporto offline.</p>
+                  </div>
+                  <button onClick={handleInstallClick} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                    Installa Ora
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ padding: '1.5rem', background: 'var(--bg-base)', borderRadius: '12px', border: '1px solid var(--border-soft)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-main)', fontWeight: '600' }}>
@@ -132,7 +170,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
             </div>
 
-            {/* Custom Font Selection */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ padding: '1.5rem', background: 'var(--bg-base)', borderRadius: '12px', border: '1px solid var(--border-soft)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-main)', fontWeight: '600' }}>
@@ -152,7 +189,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     fontFamily: 'inherit',
                     width: '100%',
                     marginTop: '1rem',
-                    background: 'var(--bg-secondary)',
+                    background: 'var(--bg-panel)',
                     color: 'var(--text-main)'
                   }}
                 >
@@ -171,7 +208,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <details style={{ padding: '0.75rem 1rem', background: 'var(--bg-base)', border: '1px solid var(--border-soft)', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: '1.5' }}>
               <summary style={{ color: 'var(--text-main)', fontWeight: '600', cursor: 'pointer', outline: 'none' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', verticalAlign: 'middle' }}>
-                  <Info size={16} style={{ color: 'var(--accent-primary)' }}/> Come configurare la sincronizzazione
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Info size={16} style={{ color: 'var(--accent-primary)' }}/> Come configurare la sincronizzazione
+                  </span>
                 </span>
               </summary>
               <ul style={{ margin: 0, marginTop: '0.75rem', paddingLeft: '1.5rem', color: 'var(--text-muted)' }}>
@@ -221,7 +260,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </button>
                 </div>
                 {syncMessage && (
-                  <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(0,0,0,0.1)', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     {isSyncing && <RefreshCw size={14} className="spin-animation" />}
                     {syncMessage}
                   </div>
@@ -255,6 +294,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             color: var(--accent-primary);
             border-bottom: 2px solid var(--accent-primary);
             font-weight: 600;
+          }
+          @keyframes pulse-border {
+            0% { border-color: var(--accent-primary); }
+            50% { border-color: transparent; }
+            100% { border-color: var(--accent-primary); }
           }
         `}} />
       </div>

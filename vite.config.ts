@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'logo.png'],
       manifest: {
         name: 'NoteTag',
         short_name: 'NoteTag',
@@ -26,6 +26,15 @@ export default defineConfig({
             src: 'favicon.svg',
             sizes: '192x192',
             type: 'image/svg+xml'
+          }
+        ],
+        shortcuts: [
+          {
+            name: 'Nuova Nota',
+            short_name: 'Nuova',
+            description: 'Crea subito una nuova nota',
+            url: '/',
+            icons: [{ src: 'logo.png', sizes: '192x192' }]
           }
         ]
       }
