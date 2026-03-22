@@ -86,3 +86,15 @@ export function useGitHubCredentials() {
 
   return { creds, saveCreds, clearCreds };
 }
+
+export function useFont() {
+  const [fontFamily, setFontFamily] = useState(() => {
+    return localStorage.getItem('notetag-font') || "'Inter', sans-serif";
+  });
+
+  useEffect(() => {
+    localStorage.setItem('notetag-font', fontFamily);
+  }, [fontFamily]);
+
+  return { fontFamily, setFontFamily };
+}

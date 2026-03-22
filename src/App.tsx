@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Feed } from './components/Feed';
 import { SettingsModal } from './components/SettingsModal';
-import { useNotes, useGitHubCredentials } from './store';
+import { useNotes, useGitHubCredentials, useFont } from './store';
 import { pushSingleNote, deleteSingleNote } from './github';
 import { Menu } from 'lucide-react';
 import dayjs from 'dayjs';
@@ -12,6 +12,7 @@ import type { Note } from './types';
 function App() {
   const { notes, saveNote, deleteNote, setAllNotes } = useNotes();
   const { creds, saveCreds, clearCreds } = useGitHubCredentials();
+  const { fontFamily, setFontFamily } = useFont();
   
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -24,6 +25,10 @@ function App() {
     localStorage.setItem('notetag-accent', accentColor);
     document.documentElement.style.setProperty('--accent-primary', accentColor);
   }, [accentColor]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--font-main', fontFamily);
+  }, [fontFamily]);
 
   // Wrappers for Auto-Sync
   const handleSaveNote = async (note: Note) => {
@@ -172,9 +177,11 @@ function App() {
           onClearCreds={clearCreds}
           onClose={() => setIsSettingsOpen(false)}
           localNotes={notes}
-          onSyncComplete={(pulled) => setAllNotes(pulled)}
+          onSyncComplete={setAllNotes}
           accentColor={accentColor}
           setAccentColor={setAccentColor}
+          fontFamily={fontFamily}
+          setFontFamily={setFontFamily}
         />
       )}
     </div>

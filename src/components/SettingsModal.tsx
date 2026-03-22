@@ -12,10 +12,12 @@ interface SettingsModalProps {
   onSyncComplete: (notes: Note[]) => void;
   accentColor: string;
   setAccentColor: (color: string) => void;
+  fontFamily: string;
+  setFontFamily: (font: string) => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ 
-  creds, onSaveCreds, onClearCreds, onClose, localNotes, onSyncComplete, accentColor, setAccentColor
+  creds, onSaveCreds, onClearCreds, onClose, localNotes, onSyncComplete, accentColor, setAccentColor, fontFamily, setFontFamily
 }) => {
   const [token, setToken] = useState(creds?.token || '');
   const [owner, setOwner] = useState(creds?.owner || '');
@@ -24,6 +26,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
   const [activeTab, setActiveTab] = useState('general');
+
+  const fontOptions = [
+    { label: 'Inter (Modern Sans-serif)', value: "'Inter', sans-serif" },
+    { label: 'Outfit (Sleek Sans-serif)', value: "'Outfit', sans-serif" },
+    { label: 'Merriweather (Classic Serif)', value: "'Merriweather', serif" },
+    { label: 'Playfair Display (Premium Serif)', value: "'Playfair Display', serif" },
+    { label: 'Fira Code (Developer Mono)', value: "'Fira Code', monospace" }
+  ];
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,6 +129,37 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     />
                   ))}
                 </div>
+              </div>
+            </div>
+
+            {/* Custom Font Selection */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ padding: '1.5rem', background: 'var(--bg-base)', borderRadius: '12px', border: '1px solid var(--border-soft)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-main)', fontWeight: '600' }}>
+                  <Type size={18} style={{ color: 'var(--accent-primary)' }}/> Tipografia
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                  <p>Scegli il tuo carattere preferito per NoteTag:</p>
+                </div>
+                <select 
+                  value={fontFamily} 
+                  onChange={(e) => setFontFamily(e.target.value)}
+                  style={{ 
+                    padding: '0.75rem', 
+                    borderRadius: '8px', 
+                    border: '1px solid var(--border-strong)', 
+                    cursor: 'pointer', 
+                    fontFamily: 'inherit',
+                    width: '100%',
+                    marginTop: '1rem',
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text-main)'
+                  }}
+                >
+                  {fontOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
