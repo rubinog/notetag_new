@@ -85,9 +85,26 @@ Notes:
 ## Configure GitHub Sync
 
 1. Create a private repository on GitHub (example: `my-notes`).
-2. Create a Personal Access Token:
-   - Classic token with `repo` scope, or
-   - Fine-grained token with read/write access to repository contents.
+2. Create a Personal Access Token (PAT).
+
+  Quick path (Classic token):
+  - Open GitHub and go to `Settings` -> `Developer settings` -> `Personal access tokens` -> `Tokens (classic)`.
+  - Click `Generate new token (classic)`.
+  - Add a note like `notetag-sync` and choose an expiration date.
+  - Enable scope `repo`.
+  - Click `Generate token` and copy it immediately (GitHub shows it only once).
+
+  Alternative path (Fine-grained token):
+  - Go to `Settings` -> `Developer settings` -> `Personal access tokens` -> `Fine-grained tokens`.
+  - Click `Generate new token`.
+  - Select your account and restrict access to the repository used by NoteTag.
+  - In `Repository permissions`, set `Contents` to `Read and write`.
+  - Generate token and copy it immediately.
+
+  Security note:
+  - Treat the token like a password.
+  - If exposed by mistake, revoke it and generate a new one.
+
 3. In NoteTag, open Settings and fill:
    - Owner (GitHub username)
    - Repository name
@@ -101,10 +118,19 @@ Notes:
 - `npm run preview` - preview production build locally
 - `npm run lint` - run ESLint
 
-## Contributing
+## 🤝 Contributing
 
-Issues and pull requests are welcome.
+Issues and pull requests are welcome! If you have ideas to improve NoteTag, feel free to open a PR.
 
-## License
+## 📄 License & Attribution
 
-This project is open source. Add your preferred license file if needed.
+This project is open source and available under the **MIT License**.
+
+If you use this code, build upon it, or feature it in a project, I would greatly appreciate it if you could:
+* Keep the original license and copyright notice.
+* Provide a link back to this repository: [NoteTag by rubinog](https://github.com/rubinog/notetag_new).
+
+---
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/rubinog">rubinog</a>
+</p>
