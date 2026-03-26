@@ -37,9 +37,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }, [notes]);
 
   return (
-    <div className="glass-panel" style={{ width: '280px', display: 'flex', flexDirection: 'column', zIndex: 10 }}>
+    <div className="glass-panel sidebar-panel" style={{ width: '280px', display: 'flex', flexDirection: 'column', zIndex: 10, height: '100%', overflowY: 'auto' }}>
       {/* Header */}
-      <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+      <div style={{ padding: '1rem 1.25rem', display: 'flex', gap: '0.4rem', alignItems: 'center', flexShrink: 0, paddingTop: 'max(1rem, env(safe-area-inset-top))' }}>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <img src="/logo.png" width={28} height={28} alt="NoteTag" style={{ borderRadius: '8px', objectFit: 'cover' }} onError={(e) => e.currentTarget.style.display = 'none'} />
           <h1 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>NoteTag</h1>
@@ -47,7 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         
         {onCloseMobile && (
           <button className="btn-icon mobile-close-btn" onClick={onCloseMobile} title="Chiudi Menu">
-            <X size={20} />
+            <X size={22} />
           </button>
         )}
 

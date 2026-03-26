@@ -39,14 +39,21 @@ body {
   font-family: var(--font-main);
   background-color: var(--bg-base);
   color: var(--text-main);
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
 }
 
 #root {
   display: flex;
   height: 100%;
+}
+
+/* Remove tap highlight on all interactive elements */
+a, button, [role="button"], input, textarea, select, label {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .glass-panel {
@@ -292,10 +299,10 @@ input[type="checkbox"], input[type="radio"] {
   100% { transform: scale(1); }
 }
 
-/* --- Mobile Responsive Layout --- */
+/* --- Layout --- */
 .app-container {
   display: flex;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   background: var(--bg-base);
   overflow: hidden;
@@ -327,44 +334,112 @@ input[type="checkbox"], input[type="radio"] {
   display: none;
 }
 
+/* Floating Action Button (hidden on desktop) */
+.fab-btn {
+  display: none;
+}
+
+/* Feed main wrapper (for padding overrides on mobile) */
+.feed-main-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg-base);
+  padding: 2rem;
+  scroll-behavior: smooth;
+}
+
+/* Focus mode composer */
+.focus-composer {
+  position: fixed;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 900px;
+  height: 90%;
+  z-index: 100;
+  background: var(--bg-panel);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow-glass);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===================== */
+/* === MOBILE STYLES === */
+/* ===================== */
+
 @media (max-width: 768px) {
+  /* Use dynamic viewport height for app container */
   .app-container {
     flex-direction: column;
+    height: 100dvh;
   }
-  
+
+  /* Sticky header with safe area */
   .mobile-header {
     display: flex;
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
     background: var(--bg-panel);
     border-bottom: 1px solid var(--border-soft);
     align-items: center;
     gap: 1rem;
-    z-index: 10;
+    z-index: 20;
+    flex-shrink: 0;
+    min-height: 56px;
+    position: sticky;
+    top: 0;
   }
 
+  /* Feed fills remaining space */
+  .feed-container {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    padding-bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4.5rem));
+  }
+
+  /* Reduce feed padding on mobile */
+  .feed-main-wrapper {
+    padding: 1rem !important;
+  }
+
+  /* Sidebar: full-height drawer from left */
   .sidebar-container {
     position: fixed;
     top: 0;
     left: 0;
-    height: 100%;
+    height: 100dvh;
+    width: min(88vw, 340px);
     transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 200;
   }
 
   .sidebar-container.open {
     transform: translateX(0);
   }
 
+  /* Sidebar inner panel takes full width of container */
+  .sidebar-panel {
+    width: 100% !important;
+  }
+
+  /* Backdrop behind sidebar */
   .sidebar-backdrop {
     display: block;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.5);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
     z-index: -1;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
   }
 
   .glass-panel {
@@ -374,10 +449,161 @@ input[type="checkbox"], input[type="radio"] {
 
   .mobile-close-btn {
     display: flex !important;
+    min-width: 44px;
+    min-height: 44px;
   }
-  
+
+  /* Prevent iOS zoom on input focus (requires font-size >= 16px) */
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  /* Touch-friendly button sizes (44px minimum tap target) */
+  .btn {
+    min-height: 44px;
+    padding: 0.6rem 1.1rem;
+  }
+
+  .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.6rem;
+  }
+
+  /* Toolbar buttons can be slightly smaller to fit */
+  .toolbar-btn {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0.4rem;
+  }
+
+  /* Bottom sheet modals */
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
   .modal-content {
-    width: 95% !important;
-    padding: 1.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 1.5rem 1.25rem !important;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important;
+    max-height: 92svh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 !important;
+    animation: slideUpSheet 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
+
+  /* Drawer handle indicator */
+  .modal-content::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--border-strong);
+    border-radius: 2px;
+    margin: 0 auto 1.25rem;
+  }
+
+  @keyframes slideUpSheet {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* Focus mode composer (full screen on mobile) */
+  .focus-composer {
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+    padding: 1rem !important;
+    padding-top: max(1rem, env(safe-area-inset-top)) !important;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  /* FAB — Floating Action Button */
+  .fab-btn {
+    display: flex;
+    position: fixed;
+    bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
+    right: 1.25rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 0 0 0 0 var(--accent-glow);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    animation: fabIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .fab-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes fabIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* Hide scrollbars on mobile for cleaner look */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Note card spacing */
+  .note-card-container {
+    touch-action: manipulation;
+  }
+}
+
+/* ========================= */
+/* === SHARED COMPONENTS === */
+/* ========================= */
+
+/* Spin animation (sync indicator) */
+.spin-animation { animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Tab buttons */
+.tab-button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  min-height: 44px;
+}
+.tab-button:hover { color: var(--text-main); }
+.tab-button.active {
+  color: var(--accent-primary);
+  border-bottom: 2px solid var(--accent-primary);
+  font-weight: 600;
+}
+
+/* Hover/press scale feedback */
+.hover-scale { transition: transform 0.15s ease; }
+.hover-scale:active { transform: scale(0.97); }
+
+/* PWA install pulse */
+@keyframes pulse-border {
+  0%   { border-color: var(--accent-primary); }
+  50%  { border-color: transparent; }
+  100% { border-color: var(--accent-primary); }
 }

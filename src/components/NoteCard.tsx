@@ -160,49 +160,53 @@ export const NoteCard: React.FC<{
     >
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
             {dayjs(note.frontmatter['updated-at']).fromNow()}
           </span>
           <button 
             className="btn-icon" 
             title="Rispondi"
-            style={{ padding: '0.2rem', color: 'var(--text-muted)' }}
+            style={{ color: 'var(--text-muted)' }}
             onClick={() => setIsReplying(!isReplying)}
           >
-            <Reply size={14} />
+            <Reply size={15} />
           </button>
         </div>
         
         <div style={{ position: 'relative' }}>
-          <button className="btn-icon" onClick={() => setShowMenu(!showMenu)}><MoreVertical size={16}/></button>
+          <button className="btn-icon" onClick={() => setShowMenu(!showMenu)} aria-label="Menu opzioni"><MoreVertical size={18}/></button>
           {showMenu && (
-            <div style={{ position: 'absolute', right: 0, top: '100%', background: 'var(--bg-panel)', border: '1px solid var(--border-soft)', borderRadius: '8px', padding: '0.5rem', boxShadow: 'var(--shadow-md)', zIndex: 10, minWidth: '120px' }}>
-              <button 
-                className="btn-icon" 
-                style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--text-main)', padding: '0.5rem' }} 
-                onClick={() => { setIsReplying(!isReplying); setShowMenu(false); }}
-              >
-                <Reply size={14} style={{ marginRight: '8px' }}/> Reply
-              </button>
-              <button 
-                className="btn-icon" 
-                style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--text-main)', padding: '0.5rem' }} 
-                onClick={() => { setIsEditing(true); setShowMenu(false); }}
-              >
-                <Edit2 size={14} style={{ marginRight: '8px' }}/> Edit
-              </button>
-              <button 
-                className="btn-icon" 
-                style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--danger)', padding: '0.5rem' }} 
-                onClick={() => { 
-                  setShowDeleteConfirm(true);
-                  setShowMenu(false); 
-                }}
-              >
-                <Trash2 size={14} style={{ marginRight: '8px' }}/> Delete
-              </button>
-            </div>
+            <>
+              {/* Backdrop to close menu on mobile tap outside */}
+              <div style={{ position: 'fixed', inset: 0, zIndex: 9 }} onClick={() => setShowMenu(false)} />
+              <div style={{ position: 'absolute', right: 0, top: '100%', background: 'var(--bg-panel)', border: '1px solid var(--border-soft)', borderRadius: '10px', padding: '0.4rem', boxShadow: 'var(--shadow-md)', zIndex: 10, minWidth: '140px' }}>
+                <button 
+                  className="btn-icon" 
+                  style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--text-main)', padding: '0.6rem 0.75rem', gap: '0.5rem', borderRadius: '6px', fontSize: '0.9rem' }} 
+                  onClick={() => { setIsReplying(!isReplying); setShowMenu(false); }}
+                >
+                  <Reply size={15} /> Rispondi
+                </button>
+                <button 
+                  className="btn-icon" 
+                  style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--text-main)', padding: '0.6rem 0.75rem', gap: '0.5rem', borderRadius: '6px', fontSize: '0.9rem' }} 
+                  onClick={() => { setIsEditing(true); setShowMenu(false); }}
+                >
+                  <Edit2 size={15} /> Modifica
+                </button>
+                <button 
+                  className="btn-icon" 
+                  style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--danger)', padding: '0.6rem 0.75rem', gap: '0.5rem', borderRadius: '6px', fontSize: '0.9rem' }} 
+                  onClick={() => { 
+                    setShowDeleteConfirm(true);
+                    setShowMenu(false); 
+                  }}
+                >
+                  <Trash2 size={15} /> Elimina
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>

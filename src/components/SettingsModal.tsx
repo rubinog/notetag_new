@@ -94,23 +94,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}><Settings /> Impostazioni</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, fontSize: '1.15rem' }}><Settings size={20} /> Impostazioni</h2>
           <button className="btn-icon" onClick={onClose}><X size={20}/></button>
         </div>
 
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-soft)', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-soft)', marginBottom: '1.25rem' }}>
           <button 
             className={`tab-button ${activeTab === 'general' ? 'active' : ''}`} 
             onClick={() => setActiveTab('general')}
+            style={{ flex: 1 }}
           >
             Generale
           </button>
           <button 
             className={`tab-button ${activeTab === 'sync' ? 'active' : ''}`} 
             onClick={() => setActiveTab('sync')}
+            style={{ flex: 1 }}
           >
-            Sincronizzazione GitHub
+            GitHub Sync
           </button>
         </div>
 
@@ -274,33 +276,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </>
         )}
         
-        <style dangerouslySetInnerHTML={{__html: `
-          .spin-animation { animation: spin 1s linear infinite; }
-          @keyframes spin { 100% { transform: rotate(360deg); } }
-          .tab-button {
-            background: none;
-            border: none;
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            font-size: 1rem;
-            color: var(--text-muted);
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s ease;
-          }
-          .tab-button:hover {
-            color: var(--text-main);
-          }
-          .tab-button.active {
-            color: var(--accent-primary);
-            border-bottom: 2px solid var(--accent-primary);
-            font-weight: 600;
-          }
-          @keyframes pulse-border {
-            0% { border-color: var(--accent-primary); }
-            50% { border-color: transparent; }
-            100% { border-color: var(--accent-primary); }
-          }
-        `}} />
       </div>
     </div>
   );

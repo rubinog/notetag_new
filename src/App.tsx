@@ -155,13 +155,15 @@ function App() {
   return (
     <div className="app-container">
       <div className="mobile-header">
-        <button className="btn-icon" onClick={() => setIsMobileMenuOpen(true)}>
+        <button className="btn-icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Apri menu">
           <Menu size={24} style={{ color: 'var(--text-main)' }} />
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
           <img src="/logo.png" width={24} height={24} alt="NoteTag" style={{ borderRadius: '6px' }} onError={(e) => e.currentTarget.style.display = 'none'} />
-          <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>NoteTag</h1>
+          <h1 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>NoteTag</h1>
         </div>
+        {/* Right spacer to keep title centered */}
+        <div style={{ width: 44 }} />
       </div>
 
       <div className={`sidebar-container ${isMobileMenuOpen ? 'open' : ''}`}>

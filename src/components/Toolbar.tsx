@@ -8,18 +8,18 @@ interface ToolbarProps {
 
 export const Toolbar: React.FC<ToolbarProps> = ({ onInsert, onTagClick, onLinkClick }) => {
   return (
-    <div style={{ display: 'flex', gap: '0.25rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
-      <button type="button" className="btn-icon" title="Grassetto" onClick={() => onInsert('**', '**')}><Bold size={16} /></button>
-      <button type="button" className="btn-icon" title="Corsivo" onClick={() => onInsert('*', '*')}><Italic size={16} /></button>
-      <button type="button" className="btn-icon" title="Sottolineato" onClick={() => onInsert('<u>', '</u>')}><Underline size={16} /></button>
-      <button type="button" className="btn-icon" title="Elenco Puntato" onClick={() => onInsert('- ')}><List size={16} /></button>
-      <button type="button" className="btn-icon" title="Elenco da Spuntare" onClick={() => onInsert('- [ ] ')}><ListTodo size={16} /></button>
-      <button type="button" className="btn-icon" title="Codice" onClick={() => onInsert('\n```javascript\n', '\n```\n')}><Code size={16} /></button>
+    <div style={{ display: 'flex', gap: '0.1rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+      <button type="button" className="btn-icon toolbar-btn" title="Grassetto" onClick={() => onInsert('**', '**')}><Bold size={16} /></button>
+      <button type="button" className="btn-icon toolbar-btn" title="Corsivo" onClick={() => onInsert('*', '*')}><Italic size={16} /></button>
+      <button type="button" className="btn-icon toolbar-btn" title="Sottolineato" onClick={() => onInsert('<u>', '</u>')}><Underline size={16} /></button>
+      <button type="button" className="btn-icon toolbar-btn" title="Elenco Puntato" onClick={() => onInsert('- ')}><List size={16} /></button>
+      <button type="button" className="btn-icon toolbar-btn" title="Elenco da Spuntare" onClick={() => onInsert('- [ ] ')}><ListTodo size={16} /></button>
+      <button type="button" className="btn-icon toolbar-btn" title="Codice" onClick={() => onInsert('\n```javascript\n', '\n```\n')}><Code size={16} /></button>
       {onTagClick && (
-        <button type="button" className="btn-icon" title="Aggiungi Tag" onClick={onTagClick}><Tag size={16} /></button>
+        <button type="button" className="btn-icon toolbar-btn" title="Aggiungi Tag" onClick={onTagClick}><Tag size={16} /></button>
       )}
       {onLinkClick && (
-        <button type="button" className="btn-icon" title="Collega Nota" onClick={onLinkClick}><Link size={16} /></button>
+        <button type="button" className="btn-icon toolbar-btn" title="Collega Nota" onClick={onLinkClick}><Link size={16} /></button>
       )}
     </div>
   );
